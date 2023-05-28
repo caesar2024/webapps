@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="plotly-2.20.0.min.js" charset="utf-8"></script>
+    <script src="math.js" charset="utf-8"></script>
+    <script src="module.js" charset="utf-8"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+    <table style="width:100%">
+        <tr>
+            <th>
+                <p>N<sub>t</sub> = <span id="NValue"></span> cm<sup>3</sup></p>
+            </th>
+            <th>
+                <p>D<sub>g</sub> = <span id="muValue"></span> µm</p>
+            </th>
+            <th>
+                <p>CV = σ/μ</sub> = <span id="sigmaValue"></span></p>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div class="slidecontainer">
+                    <input type="range" min="10" max="1000" step="10" value="100" class="slider" id="N">
+                </div>
+            </td>
+            <td>
+                <div class="slidecontainer">
+                    <input type="range" min="10" max="30" step="0.1" value="15" class="slider" id="mu">
+                </div>
+            </td>
+            <td>
+                <div class="slidecontainer">
+                    <input type="range" min="0.07" max="0.3" step="0.01" value="0.1" class="slider" id="sigma">
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <div id="plot"></div>
+    <script>
+        var Nslider = document.getElementById("N");
+        var Noutput = document.getElementById("NValue");
+        var sigmaslider = document.getElementById("sigma");
+        var sigmaoutput = document.getElementById("sigmaValue");
+        var muslider = document.getElementById("mu");
+        var muoutput = document.getElementById("muValue");
+        sigmaoutput.innerHTML = sigmaslider.value;
+        muoutput.innerHTML = muslider.value;
+        Noutput.innerHTML = Nslider.value;
+
+        var x = logspace(0.5, 500 , 1000)
+        
+        var Des = lin(500).map(x => x / 10)
+    //    var Des = logspace(0.5, 500 , 1000)
+        var xes = Des.map(Dμm_to_xg)
+        var Ds = vecmul(Des.slice(0,-2) , Des.slice(1,-1)).map(Math.sqrt)
+        var xs = vecmul(xes.slice(0,-2) , xes.slice(1,-1)).map(Math.sqrt)
+        var dxs = vecsub(xes.slice(1,-1), xes.slice(0,-2))
+        var dDs = vecsub(Des.slice(1,-1), Des.slice(0,-2))
+
+
+        function plotme(n) {
+        var mNc = Nslider.value
+        var CV  = sigmaslider.value
+        var mDg = muslider.value
+
+        var ν = 0.112 / Math.pow(CV,2.0) - 1.0
+    
+        function rootF(B) {
+            let result = xg_to_Dμm((ν + 1) / B) - mDg
+            return result
+        } 
+
+        var B = newtonsMethod(rootF, 1e4)
+        var A = [Ap(1.0, ν, B), ν, B]
+        var mX = gamma_drop(A, xs)
+        var mD = vecdiv(vecmul(mX , dxs), dDs)
+        var pdf = vecmul(mD , dDs)
+ 
+        // modeD, i = findmax(pdf./ dDs)
+        // [Ds[i] - stdDiameter, Ds[i] + stdDiameter], [modeD / 1.6, modeD / 1.6]
+        const arr = [1, 2, 3];
+        const modeD = mD.reduce((a, b) => Math.max(a, b), -Infinity);
+        const i = mD.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+        const stdDiameter = Math.sqrt(vecmul(Ds.map(D => D - mDg).map(x => Math.pow(x, 2.0)),  vecmul(mX, dxs)).reduce((a,b)=>a+b))
+        const stdstr = stdDiameter.toFixed(2).toString()
+        const str = 'σ = ' + stdstr + 'μm'
+
+        var trace1 = {
+                x: Ds,
+                y: mD.map(x => x * mNc),
+                mode: 'lines',
+                type: 'line',
+                name: 'n(D) ',
+                line: {
+                    color: 'rgb(0,0,0)',
+                    width: 2
+                }
+            };
+
+            var trace2 = {
+                x: [Ds[i] - stdDiameter, Ds[i] + stdDiameter],
+                y: [modeD * mNc / 1.6, modeD * mNc / 1.6],
+                mode: 'lines',
+                type: 'line',
+                name: str,
+            };
+
+            var data = [trace1, trace2];
+
+            var layout = {
+                title: "",
+                showlegend: true,
+                // font: { size: 12 }
+                xaxis: {
+                    title: "Diameter (µm)",
+                    type: 'lin',
+                    range: [0, 40]
+                },
+                yaxis: {
+                    title: "dN/dlnD (cm⁻³ μm⁻¹)",
+                    // range: [0, 500000]
+                },
+                margin: {
+                    l: 50,
+                    r: 50,
+                    b: 100,
+                    t: 20,
+                    pad: 4
+                },
+                height: 400,
+            };
+
+            var config = {
+                responsive: true,
+                scrollZoom: true,
+                staticPlot: false,
+                displayModeBar: false
+            }
+
+            sigmaoutput.innerHTML = sigmaslider.value;
+            muoutput.innerHTML = muslider.value;
+            Noutput.innerHTML = Nslider.value;
+
+            return Plotly.newPlot(plot, data, layout, config);
+        }
+
+        function sigma_callback() {
+            console.log(plotme(Number(sigmaslider.value)));
+        }
+        sigmaslider.oninput = sigma_callback;
+
+        function N_callback() {
+            console.log(plotme(Number(Nslider.value)));
+        }
+        Nslider.oninput = N_callback;
+
+        function mu_callback() {
+            console.log(plotme(Number(muslider.value)));
+        }
+        muslider.oninput = mu_callback;
+
+        plotme(Number(sigmaslider.value));
+
+    </script>
+
+</body>
+
+</html>

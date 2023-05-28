@@ -25,7 +25,7 @@ body {
     width: 15px;
     height: 15px;
     border-radius: 50%; 
-    background: #A2B5CD;
+    background: #000000;
     cursor: pointer;
   }
   
@@ -33,6 +33,6 @@ body {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: #A2B5CD;
+    background: #000000;
     cursor: pointer;
   }
