@@ -54,10 +54,8 @@
         muoutput.innerHTML = muslider.value;
         Noutput.innerHTML = Nslider.value;
 
-        var x = logspace(0.5, 500 , 1000)
-        
+
         var Des = lin(500).map(x => x / 10)
-    //    var Des = logspace(0.5, 500 , 1000)
         var xes = Des.map(Dμm_to_xg)
         var Ds = vecmul(Des.slice(0,-2) , Des.slice(1,-1)).map(Math.sqrt)
         var xs = vecmul(xes.slice(0,-2) , xes.slice(1,-1)).map(Math.sqrt)
@@ -83,8 +81,6 @@
         var mD = vecdiv(vecmul(mX , dxs), dDs)
         var pdf = vecmul(mD , dDs)
  
-        // modeD, i = findmax(pdf./ dDs)
-        // [Ds[i] - stdDiameter, Ds[i] + stdDiameter], [modeD / 1.6, modeD / 1.6]
         const arr = [1, 2, 3];
         const modeD = mD.reduce((a, b) => Math.max(a, b), -Infinity);
         const i = mD.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
@@ -130,11 +126,11 @@
                 margin: {
                     l: 50,
                     r: 50,
-                    b: 100,
+                    b: 40,
                     t: 20,
                     pad: 4
                 },
-                height: 400,
+                height: 300,
             };
 
             var config = {
