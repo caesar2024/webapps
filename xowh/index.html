@@ -86,7 +86,7 @@
         const i = mD.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
         const stdDiameter = Math.sqrt(vecmul(Ds.map(D => D - mDg).map(x => Math.pow(x, 2.0)),  vecmul(mX, dxs)).reduce((a,b)=>a+b))
         const stdstr = stdDiameter.toFixed(1).toString()
-        const str = 'σ=' + stdstr + 'μm'
+        const str = 'σ=' + stdstr
 
         var trace1 = {
                 x: Ds,
@@ -120,7 +120,7 @@
                     range: [0, 50]
                 },
                 yaxis: {
-                    title: "dN/dlnD (cm⁻³ μm⁻¹)",
+                    title: "dN/dD (cm⁻³ μm⁻¹)",
                     // range: [0, 500000]
                 },
                 margin: {
