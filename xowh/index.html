@@ -89,8 +89,8 @@
         const modeD = mD.reduce((a, b) => Math.max(a, b), -Infinity);
         const i = mD.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
         const stdDiameter = Math.sqrt(vecmul(Ds.map(D => D - mDg).map(x => Math.pow(x, 2.0)),  vecmul(mX, dxs)).reduce((a,b)=>a+b))
-        const stdstr = stdDiameter.toFixed(2).toString()
-        const str = 'σ = ' + stdstr + 'μm'
+        const stdstr = stdDiameter.toFixed(1).toString()
+        const str = 'σ=' + stdstr + 'μm'
 
         var trace1 = {
                 x: Ds,
@@ -121,7 +121,7 @@
                 xaxis: {
                     title: "Diameter (µm)",
                     type: 'lin',
-                    range: [0, 40]
+                    range: [0, 50]
                 },
                 yaxis: {
                     title: "dN/dlnD (cm⁻³ μm⁻¹)",
