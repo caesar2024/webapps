@@ -14,7 +14,7 @@
     <table style="width:100%">
         <tr>
             <th>
-                <p>N<sub>t</sub> = <span id="NValue"></span> cm<sup>3</sup></p>
+                <p>N<sub>t</sub> = <span id="NValue"></span> cm<sup>-3</sup></p>
             </th>
             <th>
                 <p>LWC = <span id="muValue"></span> g m<sup>-3</sup></p>
@@ -97,7 +97,7 @@
             sim.evaluate("phi_au(tau) = 600*tau^0.68*(1-tau^0.68)^3") 
             sim.evaluate("phi_ac(tau) = (tau/(tau + 5e-4))^4") 
             
-            sim.evaluate("dLrdtau(Lr, Lc, Nr, Nc, t) = kc/(20 * xstar) * (nu+2)*(nu+4)/(nu+1)^2*Lc^2*xc(Lc, Nc)^2") //*(1+phi_au(tau(Lc,Lr))/(1-tau(Lc,Lr))^2)") 
+            sim.evaluate("dLrdtau(Lr, Lc, Nr, Nc, t) = kc/(20 * xstar) * (nu+2)*(nu+4)/(nu+1)^2*Lc^2*xc(Lc, Nc)^2 * (1+phi_au(tau(Lc,Lr))/(1-tau(Lc,Lr))^2)") 
             sim.evaluate("dLrdtac(Lr, Lc, Nr, Nc, t) = kr * Lc * Lr * phi_ac(tau(Lc, Lr))") 
             
             sim.evaluate("dLcdtau(Lr, Lc, Nr, Nc, t) = -dLrdtau(Lr, Lc, Nr, Nc, t)") 
