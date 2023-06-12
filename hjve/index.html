@@ -82,7 +82,6 @@
             const ν = 0.112 / Math.pow(CV,2.0) - 1.0
             // const mDg = muslider.value
             const Lc = muslider.value * 1e-6
-            console.log(Lc)
             var Dg = Math.pow(muslider.value * 1e-6 * 6/Math.PI/1e6/Nslider.value, 1/3) * 1e6  
             the.innerHTML = Dg.toFixed(1)  
 
@@ -94,22 +93,22 @@
 
             sim.evaluate("xc(Lc, Nc) = Lc/Nc") 
             sim.evaluate("tau(Lc, Lr) = 1 - Lc/(Lc + Lr)") 
-            sim.evaluate("phi_au(tau) = 600*tau^0.68*(1-tau^0.68)^3") 
+            sim.evaluate("phi_au(tau) = 600 * tau^0.68 * (1 - tau^0.68)^3") 
             sim.evaluate("phi_ac(tau) = (tau/(tau + 5e-4))^4") 
             
-            sim.evaluate("dLrdtau(Lr, Lc, Nr, Nc, t) = kc/(20 * xstar) * (nu+2)*(nu+4)/(nu+1)^2*Lc^2*xc(Lc, Nc)^2 * (1+phi_au(tau(Lc,Lr))/(1-tau(Lc,Lr))^2)") 
+            sim.evaluate("dLrdtau(Lr, Lc, Nr, Nc, t) = kc/(20 * xstar) * ((nu+2)*(nu+4)/(nu+1)^2)*Lc^2 * xc(Lc, Nc)^2 * (1 + (phi_au(tau(Lc,Lr))/(1-tau(Lc,Lr))^2))") 
             sim.evaluate("dLrdtac(Lr, Lc, Nr, Nc, t) = kr * Lc * Lr * phi_ac(tau(Lc, Lr))") 
             
             sim.evaluate("dLcdtau(Lr, Lc, Nr, Nc, t) = -dLrdtau(Lr, Lc, Nr, Nc, t)") 
             sim.evaluate("dLcdtac(Lr, Lc, Nr, Nc, t) = -dLrdtac(Lr, Lc, Nr, Nc, t)") 
 
-            sim.evaluate("dNcdtau(Lr, Lc, Nr, Nc, t) = 2/xstar*dLcdtau(Lr, Lc, Nr, Nc, t)") 
-            sim.evaluate("dNcdtac(Lr, Lc, Nr, Nc, t) = 1/xc(Lc, Nc)*dLcdtac(Lr, Lc, Nr, Nc, t)") 
+            sim.evaluate("dNcdtau(Lr, Lc, Nr, Nc, t) = (2/xstar) * dLcdtau(Lr, Lc, Nr, Nc, t)") 
+            sim.evaluate("dNcdtac(Lr, Lc, Nr, Nc, t) = (1/xc(Lc, Nc)) * dLcdtac(Lr, Lc, Nr, Nc, t)") 
 
-            sim.evaluate("dNrdtau(Lr, Lc, Nr, Nc, t) = -1/2*dNcdtau(Lr, Lc, Nr, Nc, t)") 
-            sim.evaluate("dNrdtac(Lr, Lc, Nr, Nc, t) = -kr*Nr*Lr") 
+            sim.evaluate("dNrdtau(Lr, Lc, Nr, Nc, t) = (-1/2) * dNcdtau(Lr, Lc, Nr, Nc, t)") 
+            sim.evaluate("dNrdtac(Lr, Lc, Nr, Nc, t) = -kr * Nr * Lr") 
 
-            sim.evaluate("dNcdtsc(Lr, Lc, Nr, Nc, t) = -kc*(nu+2)/(nu+1)*Lc^2 - dNcdtau(Lr, Lc, Nr, Nc, t)") 
+            sim.evaluate("dNcdtsc(Lr, Lc, Nr, Nc, t) = -kc * ((nu+2)/(nu+1)) * Lc^2 - dNcdtau(Lr, Lc, Nr, Nc, t)") 
 
             sim.evaluate("dLcdt(Lr, Lc, Nr, Nc, t) = dLcdtau(f(Lr), f(Lc), f(Nr), f(Nc), t) + dLcdtac(f(Lr), f(Lc), f(Nr), f(Nc), t)") 
             sim.evaluate("dLrdt(Lr, Lc, Nr, Nc, t) = dLrdtau(f(Lr), f(Lc), f(Nr), f(Nc), t) + dLrdtac(f(Lr), f(Lc), f(Nr), f(Nc), t)") 
@@ -117,7 +116,7 @@
             sim.evaluate("dNrdt(Lr, Lc, Nr, Nc, t) = dNrdtau(f(Lr), f(Lc), f(Nr), f(Nc), t) + dNrdtac(f(Lr), f(Lc), f(Nr), f(Nc), t)") 
             sim.evaluate("dtdt(Lr, Lc, Nr, Nc, t) = 1")
 
-            sim.evaluate("dt = 100")
+            sim.evaluate("dt = 20")
             sim.evaluate("tfinal = 18000")
             sim.set('f', function (x) {
                 if (x < 0) {
@@ -129,13 +128,13 @@
             Lcstr = Lc.toString()
 
             initial = "[0, " + Lcstr + ", 0, " + Nstr + ", 0]"
-            console.log(initial)
-            console.log("result = ndsolve([dLrdt, dLcdt, dNrdt, dNcdt, dtdt]," +  initial + ", dt, tfinal)")
             sim.evaluate("result = ndsolve([dLrdt, dLcdt, dNrdt, dNcdt, dtdt]," +  initial + ", dt, tfinal)")
 
             const out = sim.evaluate("result[:,[1,2,3,4,5]]").toArray().map(([Lr, Lc, Nr, Nc, t]) => ({ Lr, Lc, Nr, Nc, t }))
+            console.log(out.map(f => f.t))
+
             var trace1 = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => f.Lc*1e6),
                 mode: 'lines',
                 type: 'line',
@@ -147,7 +146,7 @@
             };
 
             var trace2 = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => f.Lr*1e6),
                 mode: 'lines',
                 type: 'line',
@@ -193,7 +192,7 @@
 
             
             var trace1a = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => f.Lc/f.Nc),
                 mode: 'lines',
                 type: 'line',
@@ -205,7 +204,7 @@
             };
 
             var trace2a = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => Math.pow(f.Lr * 6/Math.PI/1e6/f.Nr, 1/3) * 1e6),
                 mode: 'lines',
                 type: 'line',
@@ -217,7 +216,7 @@
             };
 
             var trace1a = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => Math.pow(f.Lc * 6/Math.PI/1e6/Nslider.value, 1/3) * 1e6),
                 mode: 'lines',
                 type: 'line',
@@ -255,7 +254,7 @@
 
 
             var trace2b = {
-                x: out.map(f => f.t/60/60),
+                x: out.map(f => f.t/3600),
                 y: out.map(f => f.Nr * 1000),
                 mode: 'lines',
                 type: 'line',
@@ -310,7 +309,7 @@
             muoutput.innerHTML = muslider.value;
             Noutput.innerHTML = Nslider.value;
 
-            Plotly.newPlot(plot1, data, layout1, config);
+            Plotly.newPlot(plot1, [trace1, trace2], layout1, config);
             Plotly.newPlot(plot2, [trace2a], layout2, config);
             Plotly.newPlot(plot3, [trace2b], layout3, config);
             return 0; 
