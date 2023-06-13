@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="data.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div id="70b7b337"></div>
+    <script>
+        var frames = []
+        var slider_steps = []
+        var mdata = JSON.parse(data)
+
+        for (var i = 0; i <= 21; i++) {
+            frames.push(  {data: [{lon: mdata.xs30[i], lat: mdata.ys30[i]}, {lon: mdata.xs20[i], lat: mdata.ys20[i]},{lon: mdata.xs10[i], lat: mdata.ys10[i]}], name: i})
+            slider_steps.push ({
+                label: i+2,
+                method: "animate",
+                args: [[i], {
+                    mode: "immediate",
+                    transition: {duration: 300},
+                    frame: {duration: 300}
+                }]
+            })
+        }
+
+        var data_70b7b337 = [{
+            type: 'scattergeo',
+            lat: frames[0].data[0].lat,
+            lon: frames[0].data[0].lon,
+            mode: 'lines',
+            line: {
+                width: 2,
+                color: 'rgb(0, 0, 0.5)'
+            }, 
+            showlegend: true,
+            name: "-30",
+        },
+        {
+        type: 'scattergeo',
+            lon: frames[0].data[1].lon,
+            lat: frames[0].data[1].lat,
+            mode: 'lines',
+            line: {
+                width: 2,
+                color: 'rgb(0.5, 0, 0.5)'
+            }, 
+            showlegend: true,
+            name: "-20",
+        },
+        {
+        type: 'scattergeo',
+            lon: frames[0].data[2].lon,
+            lat: frames[0].data[2].lat,    
+            mode: 'lines',
+            line: {
+                width: 2,
+                color: 'rgb(200, 0, 0)'
+            }, 
+            showlegend: true,
+            name: "-10",
+        }
+    ]         
+        
+    var layout_70b7b337 = {
+        title: 'Feb 2021 Cold Air Outbreak',
+        // "width":800,
+        "height":400,
+        "margin":{"l":0,"b":0,"r":0,"t":40},
+        "geo":{"lataxis":{"showgrid":true,"gridcolor":"rgb(210, 210, 210)"},"showlakes":true,"showland":true,"showocean":true,"resolution":50,"projection":{"rotation":{"lat":50,"lon":-110},"type":"orthographic"},"scope":"north america","subunitwidth":0.5,"oceancolor":"rgb(201, 224, 255)","showcountries":true,"showsubunits":true,"lonaxis":{"showgrid":true,"gridcolor":"rgb(210, 210, 210)"},"showcoastlines":true,"lakecolor":"rgb(201, 224, 255)"},
+        "dragmode":"zoom",
+        updatemenus: [{
+            x: 0.1,
+            y: 0,
+            yanchor: "top",
+            xanchor: "right",
+            showactive: false,
+            direction: "left",
+            type: "buttons",
+            pad: {"t": 37, "r": 10},
+            buttons: [{
+            method: "animate",
+            args: [null, {
+                fromcurrent: true,
+                transition: {
+                    duration: 0,
+                },
+                frame: {
+                    duration: 500
+                }
+            }],
+            label: "Play"
+            }, {
+            method: "animate",
+            args: [
+                [null],
+                {
+                mode: "immediate",
+                transition: {
+                    duration: 0
+                },
+                frame: {
+                    duration: 0
+                }
+                }
+            ],
+            label: "Pause"
+            }]
+            }],
+        sliders: [{
+            active: 0,
+            steps: slider_steps,
+            x: 0.1,
+            len: 0.9,
+            xanchor: "left",
+            y: 0,
+            yanchor: "top",
+            pad: {t: 0, b: 0},
+            currentvalue: {
+                visible: true,
+                prefix: "Feb:",
+                xanchor: "right",
+                font: {
+                    size: 14,
+                    color: "#666"
+                }
+            },
+            transition: {
+                duration: 300,
+                easing: "cubic-in-out"
+            }
+            }]
+        }
+        var config_70b7b337 = {"showLink":false,"editable":false,"responsive":true,"staticPlot":false,"displayModeBar":false,"scrollZoom":true}
+
+
+        Plotly.newPlot("70b7b337", data_70b7b337, layout_70b7b337, config_70b7b337).then(function() {
+            Plotly.addFrames("70b7b337", frames);
+});
+
+    </script>
+   </body>
+</html>
