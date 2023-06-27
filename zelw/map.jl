@@ -242,8 +242,8 @@ layout1 = Dict{Symbol,Any}(
         :showcountries => true,
         :showland => true,
         :landcolor => "#FEFDED",
-        :oceancolor => "#9DDBFF",
-        :lakecolor => "#006699",
+        :oceancolor => "#9DDBFF",   
+        :lakecolor => "#9DDBFF",
         :showocean => true,
         :showlakes => true,
         :scope => "world",
@@ -264,4 +264,4 @@ p = Plot(data, Layout(layout1))
 
 #p
 
-to_html("index.html", [p])
+# to_html("index.html", [p])
