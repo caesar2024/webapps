@@ -85,7 +85,7 @@ trace1 = Dict{Symbol,Any}(
     :lat => mlats,
     :showscale => true,
     :line => Dict(:width => 2, :color => "rgb(0, 0, 0)", :dash => "dash"),
-    :name => "r = 1000 n mi",
+    :name => "1000 nmi",
 )
 
 trace5 = Dict{Symbol,Any}(
